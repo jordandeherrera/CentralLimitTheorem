@@ -1,6 +1,31 @@
 Title
 ========================================================
 
+# Libraries
+
+```{r}
+library(ggthemes)
+library(ggplot2)
+```
+
+# Subset Data
+
+```{r}
+dsamp <- diamonds[sample(nrow(diamonds), 1000), ]
+```
+
+# Plot with highchart
+
+```{r}
+hc <- (qplot(carat, price, data=dsamp, colour=cut, size=carat)
++ theme_hc() 
++ scale_colour_tableau("colorblind10")
++ ggtitle("Diamonds Are Forever"))
+hc
+```
+
+# Standard Template for RMD File
+
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **MD** toolbar button for help on Markdown).
 
 When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
