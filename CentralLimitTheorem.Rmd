@@ -1,42 +1,104 @@
-Title
+---
+output: pdf_document
+---
+Central Limit Theorem
 ========================================================
 
-# Libraries
+# Synopsis
+
+The central limit theorem states that the distribution of sample means of normalized variables approaches the standard normal distribution as sample size increases.  We will demonstrate this by using the exponential distribution function in R.  By increasing the number of iterations of the exponential distribution function, we will show that the sample means of the simulations will approach a normal distribution.
+
+# Assumptions
+
+* Lambda set to 0.2
+* 40 simulations
+* Compare distributions of 1, 10, and 1000 iterations
+
+# Data
+
+The following prepares the sample populations and then calculates the mean of each sample population:
 
 ```{r}
-library(ggthemes)
-library(ggplot2)
+# Create empty variables for means
+means_10 = NULL
+means_1000 = NULL
+
+# Create empty variables for distributions
+expdist_10 = NULL
+expdist_1000 = NULL
+
+# Create 40 simulations with lambda of 0.2
+expdist_1 = rexp(40,0.2)
+
+# Create 10 iterations of 40 simulations
+for (i in 1 : 10) expdist_10   = c(expdist_10  , rexp(40, 0.2))
+
+# Create 1000 iterations of 40 simulations
+for (i in 1 : 1000) expdist_1000 = c(expdist_1000, rexp(40, 0.2))
+
+# Separate each of the iterations of 40 simulations
+# into separate samples and then calculate the mean
+# of those sample populations
+
+# 1 iteration
+means_1 <- mean(expdist_1)
+
+# 10 iterations
+means_10   <- unlist(lapply(split(expdist_10, 
+              ceiling(seq_along(expdist_10)/40)),mean))
+
+# 1000 iterations
+means_1000 <- unlist(lapply(split(expdist_1000, 
+              ceiling(seq_along(expdist_1000)/40)),mean))
 ```
 
-# Subset Data
+# Results - Simulation Results vs Theory
+
+## Variance
+
+The theoretical variance of an exponential distribution is the following:
 
 ```{r}
-dsamp <- diamonds[sample(nrow(diamonds), 1000), ]
+0.2^-2
 ```
 
-# Plot with highchart
+Here are the results of the simulations:
 
 ```{r}
-hc <- (qplot(carat, price, data=dsamp, colour=cut, size=carat)
-+ theme_hc() 
-+ scale_colour_tableau("colorblind10")
-+ ggtitle("Diamonds Are Forever"))
-hc
+var(expdist_1)
+var(expdist_10)
+var(expdist_1000)
 ```
 
-# Standard Template for RMD File
+As shown in the above, as the number of iterations increases, the variance approaches the theoretical variance.
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring web pages (click the **MD** toolbar button for help on Markdown).
+## Distribution of the Mean
 
-When you click the **Knit HTML** button a web page will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+Similarly, 
 
 ```{r}
-summary(cars)
+theoretical_mean <- 1.0/0.2
+par(mfrow = c(2,1))
+
+hist(mns_10, main="Mean Exponential Distribution", 
+     xlab="Result", 
+     col="lightgreen", 
+     las=1, 
+     breaks=10,      
+     prob = TRUE)
+
+mtext("40 simulations, 10 iterations",3)
+abline(v=theoretical_mean, col="red", lwd=3)
+curve(dnorm(x, mean=mean(mns_10), sd=sd(mns_10)), add=TRUE, lwd=3, lty=5)
+
+hist(mns_1000, main="Mean Exponential Distribution", 
+     xlab="Result", 
+     col="lightgreen", 
+     las=1, 
+     breaks=200, 
+     prob = TRUE)
+
+mtext("40 simulations, 1000 iterations",3)
+abline(v=theoretical_mean, col="red", lwd=3)
+curve(dnorm(x, mean=mean(mns_1000), sd=sd(mns_1000)), add=TRUE, lwd=3, lty=5)
 ```
-
-You can also embed plots, for example:
-
-```{r fig.width=7, fig.height=6}
-plot(cars)
-```
-
