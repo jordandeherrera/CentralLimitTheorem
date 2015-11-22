@@ -10,13 +10,17 @@ output: word_document
 The goal of the following procedures is to analyze the ToothGrowth data in R.  The analysis is organized into the following sections:
 * Exploratory Data Analysis
 * Confidence Intervals and Hypothesis Testing
-* Assumptions
 
 ## Exploratory Data Analysis
 
 ### Necessary Libraries
 
 ```{r}
+# Use ggthemes, grid, and gridExtra for styling
+library(ggthemes)
+library(grid)
+library(gridExtra)
+
 # Use ggplot2 library for exploratory graphs
 library(ggplot2)
 ```
@@ -41,98 +45,74 @@ unique(ToothGrowth$dose)
 
 * Three unique dosage levels (0.5, 1.0, and 2.0)
 
-Let's see how the population of data fits into these six different categories (3 dosages across 2 supplement types) using a boxplot graph within ggplot2:
-
-
-
-# Confidence Intervals and Hypothesis Testing
-
-We'll use Welch's t-test to test the null hypothesis that two distinct populations have equal means.  If the null hypothesis is rejected, then that means that 
+Let's see how the population of data fits into these six different categories (3 dosages across 2 supplement types) using boxplot graphs with ggplot2:
 
 ```{r}
-# Create empty variables for means
-means_10 = NULL
-means_1000 = NULL
+# Create a boxplot of supplement types and doses
+plot.supplementDose <- (ggplot(aes(x = supp, y = len), data = ToothGrowth) 
+       + geom_boxplot(aes(fill=supp))
+       + facet_wrap(~ dose)
++ theme_few() 
++ scale_colour_few()
++ ggtitle("Tooth Length by Supplement and Dose"))
 
-# Create empty variables for distributions
-expdist_10 = NULL
-expdist_1000 = NULL
+# Create a boxplot of supplement types
+plot.supplement <- (ggplot(aes(x = supp, y = len), data = ToothGrowth) 
+                        + geom_boxplot(aes(fill=supp))
+                        + theme_few() 
+                        + scale_colour_few()
+                        + ggtitle("Tooth Length by Supplement"))
 
-# Create 40 simulations with lambda of 0.2
-expdist_1 = rexp(40,0.2)
+# Create a boxplot of doses
+plot.dose <- (ggplot(aes(x = dose, y = len), data = ToothGrowth) 
+                    + geom_boxplot(aes(fill=dose))
+                    + facet_grid(. ~ dose)                    
+                    + theme_few() 
+                    + scale_colour_few()
+                    + ggtitle("Tooth Length by Dosage"))
 
-# Create 10 iterations of 40 simulations
-for (i in 1 : 10) expdist_10   = c(expdist_10  , rexp(40, 0.2))
+# Grid of all plots
+grid.arrange(plot.dose, plot.supplement, ncol=1)
+plot.supplementDose
 
-# Create 1000 iterations of 40 simulations
-for (i in 1 : 1000) expdist_1000 = c(expdist_1000, rexp(40, 0.2))
-
-# Separate each of the iterations of 40 simulations
-# into separate samples and then calculate the mean
-# of those sample populations
-
-# 1 iteration
-means_1 <- mean(expdist_1)
-
-# 10 iterations
-means_10   <- unlist(lapply(split(expdist_10, 
-              ceiling(seq_along(expdist_10)/40)),mean))
-
-# 1000 iterations
-means_1000 <- unlist(lapply(split(expdist_1000, 
-              ceiling(seq_along(expdist_1000)/40)),mean))
 ```
 
-# Results - Simulation Results vs Theory
+## Confidence Intervals and Hypothesis Testing
 
-## Variance
+We'll use Welch's t-test to test the null hypothesis that two distinct populations have equal means.  If the null hypothesis is rejected, then that means that there is some indication that the populations being examined have different sample means.  In our specific analysis, that means that whatever attribute we're examining, could result in different tooth growth rates.
 
-The theoretical variance of an exponential distribution is the following:
+### Data Preparation
+
+Let's start by separating the data into distinct comparative values.  The Welch t-test requires data to be separated into 2 levels, so the supplement type is ready for analysis, but we will have to prepare the data into separate population groups based on unique pairings of the different dose types.
 
 ```{r}
-0.2^-2
+# Separate the data into separate groups based on dose
+popDose1 = subset(ToothGrowth, dose %in% c(0.5, 1.0))
+popDose2 = subset(ToothGrowth, dose %in% c(0.5, 2.0))
+popDose3 = subset(ToothGrowth, dose %in% c(0.1, 2.0))
 ```
 
-Here are the results of the simulations:
+### Analysis
+
+Now, we can perform the Welch t-test on each set of data to determine when we should reject the null hypothesis:
+
+#### Supplement Type
+```{r}
+
+```
+
+#### Dose Level
+```{r}
+
+```
 
 ```{r}
-var(expdist_1)
-var(expdist_10)
-var(expdist_1000)
+
 ```
-
-As shown in the above, as the number of iterations increases, the variance approaches the theoretical variance.
-
-## Distribution of the Mean
-
-As the number of iterations increases, we can also see that the distribution begins to smooth out and appear to be closer to a normal distribution's "bell curve" type shape.  The distribution is centered around the theoretical mean which is 1.0/0.2 or 5.
 
 ```{r}
-# Calculate theoretical mean
-theoretical_mean <- 1.0/0.2
 
-# Two graphs in two rows, one column
-# par(mfrow = c(2,1))
-
-# Exponential Distribution of 10 iterations
-hist(means_10, main="Mean Exponential Distribution", 
-     xlab="Result", 
-     col="lightblue", 
-     las=1, 
-     breaks=10,      
-     prob = TRUE)
-mtext("40 simulations, 10 iterations",3)
-abline(v=theoretical_mean, col="blue", lwd=3)
-curve(dnorm(x, mean=mean(means_10), sd=sd(means_10)), add=TRUE, lwd=3, lty=5)
-
-# Exponential Distribution of 1000 iterations
-hist(means_1000, main="Mean Exponential Distribution", 
-     xlab="Result", 
-     col="lightblue", 
-     las=1, 
-     breaks=200, 
-     prob = TRUE)
-mtext("40 simulations, 1000 iterations",3)
-abline(v=theoretical_mean, col="blue", lwd=3)
-curve(dnorm(x, mean=mean(means_1000), sd=sd(means_1000)), add=TRUE, lwd=3, lty=5)
 ```
+
+
+### Assumptions
