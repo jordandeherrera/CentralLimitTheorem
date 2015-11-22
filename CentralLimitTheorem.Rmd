@@ -1,8 +1,9 @@
 ---
-output: pdf_document
+output: word_document
 ---
 Central Limit Theorem
 ========================================================
+by Jordan DeHerrera
 
 # Synopsis
 
@@ -81,7 +82,7 @@ As the number of iterations increases, we can also see that the distribution beg
 theoretical_mean <- 1.0/0.2
 
 # Two graphs in two rows, one column
-par(mfrow = c(2,1))
+# par(mfrow = c(2,1))
 
 # Exponential Distribution of 10 iterations
 hist(means_10, main="Mean Exponential Distribution", 
@@ -97,11 +98,11 @@ curve(dnorm(x, mean=mean(means_10), sd=sd(means_10)), add=TRUE, lwd=3, lty=5)
 # Exponential Distribution of 1000 iterations
 hist(means_1000, main="Mean Exponential Distribution", 
      xlab="Result", 
-     col="lightgreen", 
+     col="lightblue", 
      las=1, 
      breaks=200, 
      prob = TRUE)
 mtext("40 simulations, 1000 iterations",3)
-abline(v=theoretical_mean, col="red", lwd=3)
+abline(v=theoretical_mean, col="blue", lwd=3)
 curve(dnorm(x, mean=mean(means_1000), sd=sd(means_1000)), add=TRUE, lwd=3, lty=5)
 ```
