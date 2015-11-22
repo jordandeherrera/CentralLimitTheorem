@@ -74,31 +74,34 @@ As shown in the above, as the number of iterations increases, the variance appro
 
 ## Distribution of the Mean
 
-Similarly, 
+As the number of iterations increases, we can also see that the distribution begins to smooth out and appear to be closer to a normal distribution's "bell curve" type shape.  The distribution is centered around the theoretical mean which is 1.0/0.2 or 5.
 
 ```{r}
+# Calculate theoretical mean
 theoretical_mean <- 1.0/0.2
+
+# Two graphs in two rows, one column
 par(mfrow = c(2,1))
 
-hist(mns_10, main="Mean Exponential Distribution", 
+# Exponential Distribution of 10 iterations
+hist(means_10, main="Mean Exponential Distribution", 
      xlab="Result", 
-     col="lightgreen", 
+     col="lightblue", 
      las=1, 
      breaks=10,      
      prob = TRUE)
-
 mtext("40 simulations, 10 iterations",3)
-abline(v=theoretical_mean, col="red", lwd=3)
-curve(dnorm(x, mean=mean(mns_10), sd=sd(mns_10)), add=TRUE, lwd=3, lty=5)
+abline(v=theoretical_mean, col="blue", lwd=3)
+curve(dnorm(x, mean=mean(means_10), sd=sd(means_10)), add=TRUE, lwd=3, lty=5)
 
-hist(mns_1000, main="Mean Exponential Distribution", 
+# Exponential Distribution of 1000 iterations
+hist(means_1000, main="Mean Exponential Distribution", 
      xlab="Result", 
      col="lightgreen", 
      las=1, 
      breaks=200, 
      prob = TRUE)
-
 mtext("40 simulations, 1000 iterations",3)
 abline(v=theoretical_mean, col="red", lwd=3)
-curve(dnorm(x, mean=mean(mns_1000), sd=sd(mns_1000)), add=TRUE, lwd=3, lty=5)
+curve(dnorm(x, mean=mean(means_1000), sd=sd(means_1000)), add=TRUE, lwd=3, lty=5)
 ```
