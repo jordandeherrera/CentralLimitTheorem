@@ -1,0 +1,138 @@
+---
+title: "Tooth Growth Analysis"
+author: "Jordan DeHerrera"
+date: "November 22, 2015"
+output: word_document
+---
+
+# Synopsis
+
+The goal of the following procedures is to analyze the ToothGrowth data in R.  The analysis is organized into the following sections:
+* Exploratory Data Analysis
+* Confidence Intervals and Hypothesis Testing
+* Assumptions
+
+## Exploratory Data Analysis
+
+### Necessary Libraries
+
+```{r}
+# Use ggplot2 library for exploratory graphs
+library(ggplot2)
+```
+
+### Analysis
+
+Let's look at what the data looks like with the summary function:
+
+```{r}
+# Summary of ToothGrowth data
+summary(ToothGrowth)
+```
+
+Based on the summary information, we can infer the following about the data:
+* There are two supplement types (OJ and VC)
+* There is a dosage level with variability.  Let's find out how many unique values exist within the attribute:
+
+```{r}
+# Unique values of dose
+unique(ToothGrowth$dose)
+```
+
+* Three unique dosage levels (0.5, 1.0, and 2.0)
+
+Let's see how the population of data fits into these six different categories (3 dosages across 2 supplement types) using a boxplot graph within ggplot2:
+
+
+
+# Confidence Intervals and Hypothesis Testing
+
+We'll use Welch's t-test to test the null hypothesis that two distinct populations have equal means.  If the null hypothesis is rejected, then that means that 
+
+```{r}
+# Create empty variables for means
+means_10 = NULL
+means_1000 = NULL
+
+# Create empty variables for distributions
+expdist_10 = NULL
+expdist_1000 = NULL
+
+# Create 40 simulations with lambda of 0.2
+expdist_1 = rexp(40,0.2)
+
+# Create 10 iterations of 40 simulations
+for (i in 1 : 10) expdist_10   = c(expdist_10  , rexp(40, 0.2))
+
+# Create 1000 iterations of 40 simulations
+for (i in 1 : 1000) expdist_1000 = c(expdist_1000, rexp(40, 0.2))
+
+# Separate each of the iterations of 40 simulations
+# into separate samples and then calculate the mean
+# of those sample populations
+
+# 1 iteration
+means_1 <- mean(expdist_1)
+
+# 10 iterations
+means_10   <- unlist(lapply(split(expdist_10, 
+              ceiling(seq_along(expdist_10)/40)),mean))
+
+# 1000 iterations
+means_1000 <- unlist(lapply(split(expdist_1000, 
+              ceiling(seq_along(expdist_1000)/40)),mean))
+```
+
+# Results - Simulation Results vs Theory
+
+## Variance
+
+The theoretical variance of an exponential distribution is the following:
+
+```{r}
+0.2^-2
+```
+
+Here are the results of the simulations:
+
+```{r}
+var(expdist_1)
+var(expdist_10)
+var(expdist_1000)
+```
+
+As shown in the above, as the number of iterations increases, the variance approaches the theoretical variance.
+
+## Distribution of the Mean
+
+As the number of iterations increases, we can also see that the distribution begins to smooth out and appear to be closer to a normal distribution's "bell curve" type shape.  The distribution is centered around the theoretical mean which is 1.0/0.2 or 5.
+
+```{r}
+# Calculate theoretical mean
+theoretical_mean <- 1.0/0.2
+
+# Two graphs in two rows, one column
+# par(mfrow = c(2,1))
+
+# Exponential Distribution of 10 iterations
+hist(means_10, main="Mean Exponential Distribution", 
+     xlab="Result", 
+     col="lightblue", 
+     las=1, 
+     breaks=10,      
+     prob = TRUE)
+mtext("40 simulations, 10 iterations",3)
+abline(v=theoretical_mean, col="blue", lwd=3)
+curve(dnorm(x, mean=mean(means_10), sd=sd(means_10)), add=TRUE, lwd=3, lty=5)
+
+# Exponential Distribution of 1000 iterations
+hist(means_1000, main="Mean Exponential Distribution", 
+     xlab="Result", 
+     col="lightblue", 
+     las=1, 
+     breaks=200, 
+     prob = TRUE)
+mtext("40 simulations, 1000 iterations",3)
+abline(v=theoretical_mean, col="blue", lwd=3)
+curve(dnorm(x, mean=mean(means_1000), sd=sd(means_1000)), add=TRUE, lwd=3, lty=5)
+```
