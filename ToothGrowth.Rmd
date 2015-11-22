@@ -8,6 +8,7 @@ output: word_document
 # Synopsis
 
 The goal of the following procedures is to analyze the ToothGrowth data in R.  The analysis is organized into the following sections:
+
 * Exploratory Data Analysis
 * Confidence Intervals and Hypothesis Testing
 
@@ -73,8 +74,9 @@ plot.dose <- (ggplot(aes(x = dose, y = len), data = ToothGrowth)
 
 # Grid of all plots
 grid.arrange(plot.dose, plot.supplement, ncol=1)
-plot.supplementDose
 
+# Plot of Supplement and Dose
+plot.supplementDose
 ```
 
 ## Confidence Intervals and Hypothesis Testing
@@ -98,21 +100,30 @@ Now, we can perform the Welch t-test on each set of data to determine when we sh
 
 #### Supplement Type
 ```{r}
-
+t.test(len ~ supp, paired = F, var.equal = F, data = ToothGrowth)
 ```
+
+As shown, we would not reject the null hypothesis.  This indicates that the supplement type does not have an impact on tooth growth rate as we would expect based on the exploratory data analysis done.
 
 #### Dose Level
 ```{r}
-
+t.test(len ~ supp, paired = F, var.equal = F, data = popDose1)
 ```
 
 ```{r}
-
+t.test(len ~ supp, paired = F, var.equal = F, data = popDose2)
 ```
 
 ```{r}
-
+t.test(len ~ supp, paired = F, var.equal = F, data = popDose3)
 ```
 
+We would reject the null hypothesis in each of the tests above this text.  This indicates that the dosage has an impact on tooth growth rate with higher doses leading to longer tooth lengths as indicated by the difference in means of each of the sample populations.  This is consistent with the expected results based on the exploratory analysis.
 
 ### Assumptions
+
+Some key assumptions in the analysis include the following:
+
+* The populations given different doses and supplement types are normally distributed
+* The populations are independent.  That is, 60 guinea pigs were used so that each combination of dose level and delivery method were not affected by other methods
+* Double blind research methods were used to prevent errors in recording observations due to unconscious bias from the observers/researchers
